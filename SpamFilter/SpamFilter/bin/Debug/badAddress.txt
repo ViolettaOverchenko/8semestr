@@ -1,0 +1,2 @@
+test1@gmail.ru
+badAddress@mail.com
