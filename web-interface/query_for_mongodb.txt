@@ -1,0 +1,65 @@
+Вариант 1. Датасет 1. Покопаемся в переписке Shanna Husser и Eric Bass. Сколько писем каждый из них отправил другому?
+db.mails.aggregate(
+    {
+         "$match": 
+         {
+             "$or": [{"headers.X-From": "Eric Bass", "headers.X-To": "Shanna Husser"}, 
+             {"headers.X-From": "Shanna Husser", "headers.X-To": "Eric Bass"}]
+         }
+    },
+    {
+        "$project":
+        {
+            _id: 0.0,
+            to: "$headers.X-To",
+            from: "$headers.X-From"
+        }
+    },
+    {
+        "$group": 
+        { 
+            _id: {'to': "$to", 'from': "$from"},
+            count: {$sum: 1}
+        }
+    },
+    {
+        "$project": 
+        {
+            
+            to: "$_id.to",
+            from: "$_id.from",
+            count: "$count",
+            _id: 0.0
+        }
+    }
+);
+
+Вариант 7. Датасет 1. Сколько человек отправляют письма сами себе?
+db.mails.aggregate(
+    {
+        "$match": 
+        {
+            "$expr" : 
+            {
+                "$eq" : [
+                            "$headers.From", 
+                            "$headers.To"
+                        ]
+            }
+        }
+    }, 
+    {
+        "$project":
+        {
+            _id: 0.0,
+            from: "$headers.From"
+        }
+    },
+    {
+       "$group": 
+        { 
+            _id: 0.0,
+            count: {$sum:1}
+        }
+    }
+);
