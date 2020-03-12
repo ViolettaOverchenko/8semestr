@@ -1,0 +1,47 @@
+double m[10], p[9];
+//double m[10], p[9];
+double q()
+{
+	//double m[10], p[9];
+	
+	{double m[10], p[9]; {double m[10], p[9];} }
+	double m[10], p[9];
+	{double m[10], p[9];} 
+	//double m[10], p[9];
+	double j = xxx;
+	double j = 0;
+	m[p[2]] = p[2];
+	p[1] = j;
+}
+
+
+char main() 
+{
+
+	//double m[10], p[9];
+	{double m[10], p[9];}
+
+	double m[10], p[9];
+	{double m[10], p[9];} 
+	{double m[10], p[9];}
+	{double m[10], p[9];
+		{
+			double m[10], p[9];
+			{double m[10], p[9];}
+		}
+	}
+	q();
+	m[p[2]] = 10;
+	char h[0];
+	while (m[1] > p[4])
+	{
+		char k_er = 12;	
+		{
+			char p = 4;
+			double j;
+			q();
+			double k_er = p;
+		}
+	}
+	
+}
