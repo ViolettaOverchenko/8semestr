@@ -14,6 +14,9 @@ class Diagram():
 		if f == 0:
 			self.flagInterpret = False;
 
+	def getFlagInterpret(self):
+		return self.flagInterpret;
+
 	# Описания
 	def S(self):
 		_type = '' # Тип лексемы
@@ -116,19 +119,16 @@ class Diagram():
 			_type = self.scaner.scan() #Получить текущую лексему
 			# Занесение идентификатора массива в таблицу с типом curType
 
-			# добавили флаг интерпретации
-
-			if (self.flagInterpret):
-				v = self.__tree.semInclude(''.join(self.scaner.get_lex()), self.curType + str('[]'), c_p)
-				if ( type(v) == str ):
-					self.scaner.printError(v)
+			v = self.__tree.semInclude(''.join(self.scaner.get_lex()), self.curType + str('[]'), c_p)
+			if ( type(v) == str ):
+				self.scaner.printError(v)
 		else:
 			_type = self.scaner.scan() #Получить текущую лексему
 			# Занесение идентификатора в таблицу с типом curType
-			if (self.flagInterpret):
-				v = self.__tree.semInclude(''.join(self.scaner.get_lex()), self.curType, c_p)
-				if ( type(v) == str ):
-					self.scaner.printError(v)
+			
+			v = self.__tree.semInclude(''.join(self.scaner.get_lex()), self.curType, c_p)
+			if ( type(v) == str ):
+				self.scaner.printError(v)
 
 		c_p = self.scaner.get_uk() #Запомнить текущую позицию
 		_type = self.scaner.scan() #Получить текущую лексему
@@ -167,10 +167,10 @@ class Diagram():
 		c_p = self.scaner.get_uk() #Запомнить текущую лексему
 
 		# Занесение имя функции в таблицу
-		if (self.flagInterpret):
-			v = self.__tree.semInclude(''.join(self.scaner.get_lex()), IDENTITY[FUNCTION], c_p)
-			if ( type(v) == str ):
-				self.scaner.printError(v)
+		
+		v = self.__tree.semInclude(''.join(self.scaner.get_lex()), IDENTITY[FUNCTION], c_p)
+		if ( type(v) == str ):
+			self.scaner.printError(v)
 
 		_type = self.scaner.scan() #Получить текущую лексему
 		if ( _type != LBRACKET ):
@@ -187,14 +187,12 @@ class Diagram():
 		_type = self.scaner.scan() #Получить текущую лексему
 		if ( _type != LBRACE ):
 			self.scaner.printError("ERROR! Expected left brace.")
-		if (self.flagInterpret):
-			self.__tree.nextLavel()
+		self.__tree.nextLavel()
 		self.O()
 		_type = self.scaner.scan() #Получить текущую лексему
 		if ( _type != RBRACE ):
 			self.scaner.printError("ERROR! Expected right brace.")
-		if (self.flagInterpret):
-			self.__tree.prevLavel()
+		self.__tree.prevLavel()
 
 	#Операторы и описания
 	def O(self):
@@ -225,15 +223,14 @@ class Diagram():
 			return #пустой оператор
 		elif ( _type == ID ):
 			# Поиск имени функции и переменной в таблице
-			if (self.flagInterpret):
-				v1 = self.__tree.semGetType(''.join(self.scaner.get_lex()))
-				v = self.__tree.semGetFunct(''.join(self.scaner.get_lex()))
-				if ( type(v) == str and type(v1) == str ):
-					_type = self.scaner.scan() #Получить текущую лексему
-					if ( _type == LBRACKET ):
-						self.scaner.printError(v)
-					else:
-						self.scaner.printError(v1)
+			v1 = self.__tree.semGetType(''.join(self.scaner.get_lex()))
+			v = self.__tree.semGetFunct(''.join(self.scaner.get_lex()))
+			if ( type(v) == str and type(v1) == str ):
+				_type = self.scaner.scan() #Получить текущую лексему
+				if ( _type == LBRACKET ):
+					self.scaner.printError(v)
+				else:
+					self.scaner.printError(v1)
 
 			_type = self.scaner.scan() #Получить текущую лексему
 			if ( _type == LBRACKET ):
@@ -281,10 +278,9 @@ class Diagram():
 
 		if ( _type == ID ):
 			# Поиск имени идентификатора в таблице
-			if (self.flagInterpret):
-				v = self.__tree.semGetType(''.join(self.scaner.get_lex()))
-				if ( type(v) == str ):
-					self.scaner.printError(v)
+			v = self.__tree.semGetType(''.join(self.scaner.get_lex()))
+			if ( type(v) == str ):
+				self.scaner.printError(v)
 
 			c_p = self.scaner.get_uk() #Запомнить текущую позицию
 			_type = self.scaner.scan() #Получить текущую лексему
@@ -315,10 +311,9 @@ class Diagram():
 				self.scaner.printError("ERROR! Expected identifier.")
 
 			# Поиск имени идентификатора в таблице
-			if (self.flagInterpret):
-				v = self.__tree.semGetType(''.join(self.scaner.get_lex()))
-				if ( type(v) == str ):
-					self.scaner.printError(v)
+			v = self.__tree.semGetType(''.join(self.scaner.get_lex()))
+			if ( type(v) == str ):
+				self.scaner.printError(v)
 
 	#Выражение
 	def A(self):
@@ -378,10 +373,9 @@ class Diagram():
 
 		if ( _type == ID ):
 			# Поиск имени идентификатора в таблице
-			if (self.flagInterpret):
-				v = self.__tree.semGetType(''.join(self.scaner.get_lex()))
-				if ( type(v) == str ):
-					self.scaner.printError(v)
+			v = self.__tree.semGetType(''.join(self.scaner.get_lex()))
+			if ( type(v) == str ):
+				self.scaner.printError(v)
 
 			c_p = self.scaner.get_uk() #Запомнить текущую позицию
 			_type = self.scaner.scan() #Получить текущую лексему

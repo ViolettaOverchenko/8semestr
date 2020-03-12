@@ -107,6 +107,7 @@ class Tree:
 
 	# Занесение идентификатора a в таблицу с типом t
 	def semInclude(self, a, t, position):
+		
 		if ( self.dupControl(self.__parent, a) ):
 			return "Повторное описание идентификатора " + str(a)
 		newID = Node()

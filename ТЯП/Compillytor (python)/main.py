@@ -22,7 +22,7 @@ def main():
 	
 	# Синтаксический анализатор
 	dg = Diagram(text)
-	dg.setFlagInterpret()
+	#dg.setFlagInterpret()
 	dg.S()
 
 	print('\nTree: ')
