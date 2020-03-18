@@ -14,6 +14,7 @@ body {
   height: 60px;
   line-height: 60px; /* Вертикально центрируем текст футера */
   background-color: #333333;
+  text-align: center;
 }
 
 h1 {
@@ -34,21 +35,17 @@ h1 {
 
 
 .card {
-	margin:50px 5px;
+  margin:50px 5px;
 }
-
-.btn {
-	margin-top: 20px;
-}
-
+/*
 .row {
- 	background-color:  white;
-	padding-left: 100px;
-	padding-right: 100px;
-}
+  background-color:  white;
+  padding-left: 100px;
+  padding-right: 100px;
+}*/
 
 .form-control {
-	resize: none;
+  resize: none;
 }
 
 

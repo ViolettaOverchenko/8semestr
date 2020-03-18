@@ -14,10 +14,10 @@
 
     <title>Анализ текста</title>
   </head>
-  <body>
+    <body class="text-center">
     <header>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Анализ учебных материалов</a>
+        <a class="navbar-brand" href="http://diplom.local">Анализ учебных материалов</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,43 +25,37 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/pages/registr.html">Регистрация</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link"href="/pages/authorization.html">Вход</a>
+              <a class="nav-link" href="../pages/analyses2document.html">Расчёт совместимости</a>
             </li>
           </ul>
+
+          <div class="text-right">
+            <a class="btn btn-light" href="/pages/registr.html" role="button">Регистрация</a>
+            <a class="btn btn-light" href="/pages/authorization.html" role="button">Вход</a>
+          </div>
         </div>
       </nav>
     </header>
     
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-sm-8">
-            <h1>Регистрация</h1>
-            <p>Пожалуйста, заполните эту форму, чтобы создать учетную запись.</p>
+    <form class="form-signin">
+      <img class="mb-4" src="../images/img_avatar.png" alt="" width="72" height="72">
+      <h1 class="h3 mb-3 font-weight-normal">Регистрация</h1>
 
-            <label for="email"><b>Email</b></label>
-            <input type="text" placeholder="Введите адрес электронной почты" name="email" required>
-
-            <label for="psw"><b>Пароль</b></label>
-            <input type="password" placeholder="Введите пароль" name="psw" required>
-
-            <label for="psw-repeat"><b>Повторите пароль</b></label>
-            <input type="password" placeholder="Повторите пароль" name="psw-repeat" required>
-            <hr>
-            <button type="submit" class="registerbtn">Регистрация</button>
-          <div class="container signin">
-            <p>Уже есть аккаунт? <a href="#">Вход</a></p>
-          </div>
-        </div>
+      <label for="inputEmail" class="sr-only">Введите ваш email</label>
+      <input type="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+      <label for="inputPassword" class="sr-only">Введите пароль</label>
+      <input type="passwordRepeat" id="inputPassword" class="form-control" placeholder="Пароль" required>
+      <label for="inputPasswordRepeat" class="sr-only">Повторите пароль</label>
+      <input type="password" id="inputPasswordRepeat" class="form-control" placeholder="Повторите пароль" required>
+      <a class="btn btn-lg btn-primary btn-block" href="http://diplom.local" role="button">Зарегистрироваться</a>
+      <div class="container signin">
+        <p>Уже есть аккаунт? <a href="../pages/authorization.html">Войти</a>.</p>
       </div>
-    </div>
-
-
+    </form>
+    
     <footer class="footer">
       <div class="container">
-        <span class="text-muted">Place sticky footer content here.</span>
+        <span class="text-muted">Наши контакты: owerchenko.violetta@yandex.ru</span>
       </div>
     </footer>
 
@@ -71,9 +65,4 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   </body>
-
-  
-  
- 
-
 </html>

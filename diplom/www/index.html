@@ -25,12 +25,14 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/pages/registr.html">Регистрация</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link"href="/pages/authorization.html">Вход</a>
+              <a class="nav-link" href="../pages/analyses2document.html">Расчёт совместимости</a>
             </li>
           </ul>
+
+          <div class="text-right">
+            <a class="btn btn-light" href="/pages/registr.html" role="button">Регистрация</a>
+            <a class="btn btn-light" href="/pages/authorization.html" role="button">Вход</a>
+          </div>
         </div>
       </nav>
     </header>
@@ -44,7 +46,7 @@
     <div class="container-fluid">
   
       <div class="row">
-        <div class="col">
+        <div class="col-sm-6">
           <div class="card">
             <div class="card-body">
               <form>
@@ -57,37 +59,154 @@
 
               <div class="mb-3">
                 <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Вставьте текст для анализа" rows="15" required></textarea>
-                <button class="btn btn-primary" type="submit">Анализировать</button>
+                <div class="text-right">
+                  <button class="btn btn-primary" type="submit">Анализировать</button>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div class="col">
+        <div class="col-sm-6">
           <div class="card">
             <div class="card-body">
               <h5 class="card-title">Выберите ключевые слова:</h5>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck1">
-                <label class="form-check-label" for="defaultCheck1">
-                  1 ключевое слово
-                </label>
+              <div class="table-responsive">
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th scope="col"></th>
+                      <th scope="col">Ключевое слово</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td width="10px">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheck1" checked>
+                            <label class="custom-control-label" for="customCheck1"></label>
+                        </div>
+                      </td>
+                      <td>Слово1</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheck2" checked>
+                            <label class="custom-control-label" for="customCheck2"></label>
+                        </div>
+                      </td>
+                      <td>Слово2</td>
+                    </tr>
+                    <tr>
+                      <td>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" class="custom-control-input" id="customCheck3" checked>
+                            <label class="custom-control-label" for="customCheck3"></label>
+                        </div>
+                      </td>
+                      <td>Слово3</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
-              <div class="form-check">
-                <input class="form-check-input" type="checkbox" value="" id="defaultCheck2">
-                <label class="form-check-label" for="defaultCheck2">
-                  2 ключевое слово
-                </label>
+
+              <!-- Modal -->
+              <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalCenterTitle">Добавление ключевого слова</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <input type="word" class="form-control" id="exampleInputWord" placeholder="Введите ключевое слово">
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-primary">Сохранить</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    </div>
+                  </div>
+                </div>
               </div>
-              <button class="btn btn-primary" type="submit">Выбрать</button>
+              <div class="text-right">
+                 <button type="button" class="btn btn-primary pull-right" data-toggle="modal" data-target="#exampleModalCenter">Добавить слово</button>
+                <a class="btn btn-primary" href="../pages/analyses2document.html" role="button">Сохранить</a>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+        <!--
+        <div class="col">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Выберите ключевые слова:</h5>
+              <div class="row">
+                <div class="col">
+                  <div class="dataTables_length bs-select" id="dtVerticalExample_length">
+                    <label>
+                      "Show"
+                      <select name="dtVerticalExample_length" aria-controls="dtVerticalExample"
+                      class="custom-select custom-select-sm form-control form-control-sm">
+                        <option value="10">10</option>
+                        <option value="10">25</option>
+                        <option value="10">50</option>
+                      </select>
+                      "entries"
+                    </label>
+                  </div>
+                </div>
+                <div class="col">
+                  <div id="dtVerticalExample_filter" class="dataTables_filter">
+                    <label>
+                      "Search:"
+                      <input type="search" class="form-control form-control-sm" placeholder aria-controls="dtVerticalExample">
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col">
+                  <div class="dataTables_scroll">
+                    <div class="dataTablex_scrollHead">
+                      <div class="dataTablex_scrollHeadInner">
+                        <table class="table table-striped table-bordered table-sm dataTable no-footer" cellspacing="0" width="100%" role="grid">
+                        </table>
+                      </div>
+                    </div>
+                    <div class="dataTables_scrollBody">
+                      <table id="dtVerticalExample" class="table table-striped table-bordered table-sm dataTable no-footer" cellspacing="0" width="100%" role="grid" aria-describedby="dtVerticalExample_info" style="width: 100%;">
+                        <thead>
+                          <tr role="row" style="height: 0px;">
+                            <th class="sorting_asc" aria-controls="dtVerticalExample" rowspan="1" colspan="1" aria-label="KeyWord:activate to sort column ascending" aria-sort="descending">
+                              <div class="dataTable_sizing">Ключевое слово</div>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr role="row" class="odd">
+                            <td class="sorting_1">Слово1</td>
+                          </tr>
+                          <tr role="row" class="even">
+                            <td class="sorting_1">Слово2</td>
+                          </tr>
+                          <tr role="row" class="odd">
+                            <td class="sorting_1">Слово3</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      
+                    </div>
+                  </div>
+                </div>
+              </div>-->
     
     <footer class="footer">
       <div class="container">
-        <span class="text-muted">Place sticky footer content here.</span>
+        <span class="text-muted">Наши контакты: owerchenko.violetta@yandex.ru</span>
       </div>
     </footer>
 

@@ -17,7 +17,7 @@
   <body>
     <header>
       <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Анализ учебных материалов</a>
+        <a class="navbar-brand" href="http://diplom.local">Анализ учебных материалов</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -25,26 +25,133 @@
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <ul class="navbar-nav mr-auto">
             <li class="nav-item">
-              <a class="nav-link" href="/pages/registration.html">Регистрация</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link"href="/pages/analyses2document.html">Вход</a>
+              <a class="nav-link" href="../pages/analyses2document.html">Расчёт совместимости</a>
             </li>
           </ul>
+
+          <div class="text-right">
+            <a class="btn btn-light" href="/pages/registr.html" role="button">Регистрация</a>
+            <a class="btn btn-light" href="/pages/authorization.html" role="button">Вход</a>
+          </div>
         </div>
       </nav>
     </header>
 
+
+
+    <div class="top-message_pages text-center">
+        <h1>Проверка учебных материалов на их внутреннюю и внешнюю совместимость online</h1>
+    </div>
+
+
+    <div class="container-fluid">
+  
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body text-center">
+              <p><h5>Выберите учебный материал</h5><select name="list1">
+                <option>Выберите из списка</option>
+                <option>Математика</option>
+                <option>География</option>
+                <option>Английский язык</option>
+                <option>Мат.анализ</option>
+               </select></p>
+              <p><h5>Выберите тему учебника</h5><select name="list2">
+                <option>Выберите тему</option>
+                <option>Интегрирование</option>
+                <option>Дифференцирование</option>
+               </select></p>
+              <h5 class="card-title text-left">Ключевые слова:</h5>
+              <div class="table-responsive">
+                <table class="table table-bordered text-left">
+                  <tbody>
+                    <tr>
+                      <td>Слово1</td>
+                    </tr>
+                    <tr>
+                      </td>
+                      <td>Слово2</td>
+                    </tr>
+                    <tr>
+                      </td>
+                      <td>Слово3</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <a class="btn btn-primary" href="../pages/analyses2document.html" role="button">Скрыть ключевые слова</a>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body text-center">
+              <p><h5>Выберите учебный материал</h5><select name="list1">
+                <option>Выберите из списка</option>
+                <option>Математика</option>
+                <option>География</option>
+                <option>Английский язык</option>
+                <option>Мат.анализ</option>
+               </select></p>
+              <p><h5>Выберите тему учебника</h5><select name="list2">
+                <option>Выберите тему</option>
+                <option>Интегрирование</option>
+                <option>Дифференцирование</option>
+               </select></p>
+              <a class="btn btn-primary" href="../pages/analyses2document.html" role="button">Показать ключевые слова</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="row">
+        <div class="col-sm">
+          <div class="card">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">
+              Рассчитать совместимость
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalCenterTitle">Результат анализа</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    Совместимость учебных материалов 85%.
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Закрыть</button>
+                    <button type="button" class="btn btn-primary">Готово</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
     
+
+
+    <footer class="footer">
+      <div class="container">
+        <span class="text-muted">Наши контакты: owerchenko.violetta@yandex.ru</span>
+      </div>
+    </footer>
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
   </body>
-
-  
-  
- 
 
 </html>
