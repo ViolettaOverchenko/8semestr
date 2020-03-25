@@ -1,0 +1,18 @@
+1234567890-"dkjvfdnhkj324cxv
+int m[20777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777777],
+a = 100;
+bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbtttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttstart:
+	while ((text[uk] == ' ') || (text[uk] == '\n') || (text[uk] == '\t'))
+		uk++;							// пропускаем незначащие элементы
+	if ((text[uk] == '/') && (text[uk + 1] == '/'))
+	{
+		// Начался комментарий, пропускаем текст до '\n'
+		uk += 2;
+		while ((text[uk] != '\n') && (text[uk] != '#'))
+			uk++;
+		goto start;
+	}
+	if (text[uk] == '\0') {
+		l[0] = '\0';
+		return 0;
+	}

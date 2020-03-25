@@ -1,0 +1,12 @@
+double a;
+double fun()
+{
+	double i;
+}
+
+double main(){
+	double n;
+	{double a, b;{double a, b;{double a, b;}}{double a, b;}}
+	double a;
+	{double a, b;}
+}
