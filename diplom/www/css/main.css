@@ -30,24 +30,14 @@ h1 {
 
 .container {
   width: auto;
-  max-width: 680px;
 }
 
 
 .card {
 	margin:50px 5px;
+  height: auto;
 }
 
-textarea {
-	margin-bottom: 20px;
-}
-
-/*
-.row {
- 	background-color:  white;
-	padding-left: 100px;
-	padding-right: 100px;
-}*/
 
 .form-control {
 	resize: none;
@@ -55,4 +45,17 @@ textarea {
 
 .form-group {
     color: black;
+}
+
+.my-custom-scrollbar {
+position: relative;
+height: 410px;
+overflow: auto;
+}
+.table-wrapper-scroll-y {
+display: block;
+}
+
+.btn-primary {
+  margin-top: 20px;
 }

@@ -11,14 +11,14 @@ TScaner::TScaner() {
 	SetUK(0);
 }
 
-LEX Keyword[MAX_KEYW] = { "double", "char", "while", "void", "return" };
+LEX Keyword[MAX_KEYW] = { "double", "char", "while", "main", "return" };
 int IndexKeyword[MAX_KEYW] = { DOUBLE, CHAR, WHILE, MAIN, RETURN };
 
 void TScaner::SetUK(int i) { uk = i; }		// Восстановить указатель
 
 int TScaner::GetUK(void) { return uk; }		// Запомнить указатель
 
-void TScaner::PrintError(const char *err, LEX l) {
+void TScaner::PrintError(const char* err, LEX l) {
 	int line = 1;
 	int symbol = 1;
 	int n = GetUK();
@@ -31,7 +31,7 @@ void TScaner::PrintError(const char *err, LEX l) {
 		}
 		else symbol += 1;
 	}
-	cout << "Ошибка: " << err<<  "Строка" << line << " Символ: " << l << endl;
+	cout << "Ошибка: " << err << "Строка" << line << " Символ: " << l << endl;
 	// выдаем местоположение ошибки, текст сообщения
 	// об ошибке err и ошибочный символ l
 	// действия при завершении программы
@@ -58,7 +58,7 @@ start:
 	}
 	if ((text[uk] == '/') && (text[uk + 1] == '*'))
 	{ // начался комментарий, надо пропустить текст до ’*/’
-		uk += + 2;
+		uk += +2;
 		while ((text[uk] != '*' || text[uk + 1] != '/') && text[uk] != 0) {
 			uk++;
 		}
@@ -70,7 +70,7 @@ start:
 		l[0] = '\0';
 		return END;
 	}
-	else if ((text[uk] <= '9') && (text[uk] >= '0')) 
+	else if ((text[uk] <= '9') && (text[uk] >= '0'))
 	{
 		l[i++] = text[uk++];
 		while ((text[uk] <= '9') && (text[uk] >= '0'))
@@ -118,7 +118,7 @@ start:
 	else if (text[uk] == '\"')
 	{
 		uk++;		// Не будем включать кавычки в константу
-		while ( (text[uk] != '\"') && (text[uk] != '#') && (text[uk] != '\n') )
+		while ((text[uk] != '\"') && (text[uk] != '#') && (text[uk] != '\n'))
 		{
 			if (i < MAX_LEX)
 				l[i++] = text[uk++];
@@ -179,7 +179,7 @@ start:
 		if (text[uk] == '=')
 		{
 			l[i++] = text[uk++];
-				return LE;
+			return LE;
 		}
 		return LT;
 	}
@@ -269,18 +269,29 @@ start:
 		}
 		return MOD;
 	}
-	else 
+	else
 	{
-		cout << "Неизвестная ошибка" << endl; 
+		cout << "Неизвестная ошибка" << endl;
 		l[i++] = text[uk++];
 		return ERROR;
 	}
 
 }
 
+TScaner::TScaner(string filename) {
+	LoadData(filename);
+}
+
+void TScaner::LoadData(string filename) {
+	memset(text, 0, MAX_TEXT);
+	ifstream inp(filename);
+	inp.read(text, MAX_TEXT);
+	inp.close();
+}
+
 void TScaner::GetData(void) {
-	std::ifstream in ("input.txt");
-	if (!in.is_open()) 
+	std::ifstream in("input.txt");
+	if (!in.is_open())
 		std::cout << "Ошибка! Файл для чтения отсутствует." << std::endl; // если файла нет
 	else
 	{
@@ -298,7 +309,7 @@ void TScaner::GetData(void) {
 			}
 		}
 		in.close();
-		text[i-1] = '\0';
+		text[i - 1] = '\0';
 		std::cout << text[i] << std::endl;
 	}
 }

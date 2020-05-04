@@ -1,0 +1,122 @@
+<!-- Разработка web-интерфейса для проектирования учебных материалов с учетом их
+внутренней и внешней совместимости -->
+
+
+    <div class="top-message_pages text-center">
+        <h1>Проверка учебных материалов на их внутреннюю и внешнюю совместимость online</h1>
+    </div>
+
+    <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <form>
+                <div class="form-group">
+                  <h5 class="card-title">Выберите файл для выделения ключевых слов (pdf, dox, odt):</h5>
+                  <!--<label for="exampleFormControlFile1">Выберите файл для выделения ключевых слов (pdf, dox, odt):</label>-->
+                  <input type="file" class="form-control-file" id="exampleFormControlFile1">
+                </div>
+              </form>
+
+              <div class="mb-3">
+                <textarea class="form-control" id="exampleFormControlTextarea1" placeholder="Вставьте текст для анализа" rows="15" required></textarea>
+                <div class="text-right">
+                  <button class="btn btn-primary" type="submit">Анализировать</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6">
+          <div class="card">
+            <div class="card-body">
+              <h5 class="card-title">Выберите ключевые слова:</h5>
+              <div class="table-wrapper-scroll-y my-custom-scrollbar">
+                <table class="table table-bordered table-striped table-hover">
+                  <thead>
+                    <th scope="col">Ключевое слово</th>
+                    <th></th>
+                    <th></th>
+                  </thead>
+                  <tbody>
+
+                    {{#each words}}
+                      <tr>
+                        <td>{{ this.descriptionKeyword }}</td>
+                        <td width="15px">
+                          <a href="/edit/{{ this.idKeyword }}"> <button class="far fa-edit btn btn-warning"></button></a>
+                        </td>
+                        <td width="15px">
+                          <a href="/deleteWord/{{ this.idKeyword }}"> <button class="far fa-trash-alt btn btn-danger"></button></a>
+                        </td>
+                      </tr>
+                    {{/each}}
+
+                  </tbody>
+                </table>
+              </div>
+
+              <!-- Modal -->
+              <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <form action="/addWord" method="post">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="exampleModalCenterTitle">Добавление ключевого слова</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+                      <input type="word" class="form-control" id="exampleInputWord" placeholder="Введите ключевое слово" name='descriptionKeyword'>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="submit" class="btn btn-primary">Сохранить</button>
+                      <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    </div>
+                  </form>
+                  </div>
+                </div>
+              </div>
+              <div class="text-right">
+                 <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Добавить слово</button>
+                <a class="btn btn-primary" href="../pages/analyses2document.html" role="button">Сохранить</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <h1>Введите данные</h1>
+    <form name="registerForm">
+        <label>Имя</label></br>
+        <input type="text" name="userName" /></br></br>
+        <label>Возраст</label></br>
+        <input type="number" name="userAge" /></br></br>
+        <button type="submit" id="submit">Отправить</button>
+    </form>
+    <script>
+
+        document.getElementById("submit").addEventListener("click", function (e) {
+             e.preventDefault();
+            // получаем данные формы
+            let registerForm = document.forms["registerForm"];
+            let userName = registerForm.elements["userName"].value;
+            let userAge = registerForm.elements["userAge"].value;
+            // сериализуем данные в json
+            let user = JSON.stringify({userName: userName, userAge: userAge});
+            let request = new XMLHttpRequest();
+            // посылаем запрос на адрес "/user"
+             request.open("POST", "/user", true);
+             request.setRequestHeader("Content-Type", "application/json");
+             request.addEventListener("load", function () {
+                // получаем и парсим ответ сервера
+                 let receivedUser = JSON.parse(request.response);
+                 console.log(receivedUser.userName, "-", receivedUser.userAge);   // смотрим ответ сервера
+             });
+             request.send(user);
+         });
+    </script>

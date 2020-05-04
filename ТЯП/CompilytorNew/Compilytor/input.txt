@@ -1,12 +1,16 @@
-double a;
-double fun()
-{
-	double i;
+double a = 2,b[2],c = 'n';
+
+double func() 
+{ 
+	double y = 1; 
+	while (a > 0) 
+	{ 
+		a -= 1; 
+		y += func(); 
+	} 
+	return y;
 }
 
 double main(){
-	double n;
-	{double a, b;{double a, b;{double a, b;}}{double a, b;}}
-	double a;
-	{double a, b;}
+	double n = func();
 }

@@ -1,0 +1,16 @@
+<link rel="stylesheet" type="text/css" href="/stylesheets/style_edit.css" />
+
+<div class="container">
+
+  {{#each wordData}}
+  <h4>Редактирование ключевого слова </h4>
+  <form class="form-horizontal" action="/updateWord/{{ this.idKeyword }}" method="post">
+    <input type="word" class="form-control" id="exampleInputWord" placeholder="Введите ключевое слово" name='descriptionKeyword'
+    value="{{ this.descriptionKeyword }}">
+    <div class="text-right">
+      <button type="submit" class="btn btn-primary">Сохранить</button>
+      <a class="btn btn-primary" href="../../" role="button">Отмена</a>
+    </div>
+  </form>
+  {{/each}}
+</div>

@@ -60,16 +60,21 @@ Tree* Tree::FindUp(Tree* From, LEX id)
 	return i;
 }
 
+const char* GetId(char* str) {
+	return (str[0] == 0 ? "<empty>" : str);
+}
+
 // отладочная программа печати дерева
-void Tree::Print(void)
-// отладочная программа печати дерева
+void Tree::Print(int k)
 {
-	printf("Вершина с данными %s ----->", n->id);
-	if (Left != NULL) printf(" слева данные %s", Left->n->id);
-	if (Right != NULL) printf(" справа данные %s", Right->n->id);
+	for (int i = 0; i < k; i++)
+		printf("\t");
+	printf("Вершина %s ----->", GetId(n->id));
+	if (Left != NULL) printf(" слева %s", GetId(Left->n->id));
+	if (Right != NULL) printf(" справа  %s", GetId(Right->n->id));
 	printf("\n");
-	if (Left != NULL) Left->Print();
-	if (Right != NULL) Right->Print();
+	if (Right != NULL) Right->Print(k + 1);
+	if (Left != NULL) Left->Print(k);
 }
 
 // установить текущий узел дерева
@@ -115,20 +120,21 @@ Tree* Tree::SemInclude(LEX a, TypeObject t)
 	{
 		memcpy(b.id, a, strlen(a) + 1);
 		b.typeObject = t;
-		b.Data = NULL;
-		Cur->SetLeft(&b); // сделали вершину - переменную
-		Cur = Cur->Left;
-		return Cur;
+		b.Data.DataType = (DataType)t;
+		b.Data.DataValue.DataAsDouble = NULL;
+		GetCur()->SetLeft(&b); // сделали вершину - переменную
+		SetCur(GetCur()->Left);
+		return GetCur();
 	}
 	else
 	{
 		memcpy(b.id, a, strlen(a) + 1);
 		b.typeObject = t;
-		b.Data = NULL;
+		b.Data.DataValue.DataAsDouble = NULL;
 		Cur->SetLeft(&b); // сделали вершину - функцию
 		Cur = Cur->Left;
 		v = Cur; // это точка возврата после выхода из функции
-		memcpy(&b.id, &"", 2); b.typeObject = (TypeObject)EMPTY; b.Data = NULL;
+		memcpy(&b.id, &"", 2); b.typeObject = (TypeObject)EMPTY; b.Data.DataValue.DataAsDouble = NULL;
 		Cur->SetRight(&b); // сделали пустую вершину
 		Cur = Cur->Right;
 		return v;
@@ -163,4 +169,94 @@ Tree* Tree::SemGetFunct(LEX a)
 	if (v->n->typeObject != ObjFunction)
 		sc->PrintError("Не является функцией идентификатор ", a);
 	return v;
+}
+
+//указатель на тело функции
+void Tree::SetFuncStart(int start) {
+	this->n->funcStart = start;
+}
+
+int Tree::GetFuncStart() {
+	return this->n->funcStart;
+}
+
+void Tree::DeleteSubTree(Tree* tree) {
+	if (tree->GetChild() != NULL) {
+		DeleteSubTree(tree->GetChild());
+		free(tree->GetChild());
+		tree->SetChild(NULL);
+	}
+	if (tree->GetBrother() != NULL) {
+		DeleteSubTree(tree->GetBrother());
+		free(tree->GetBrother());
+		tree->SetBrother(NULL);
+	}
+}
+
+void Tree::DeleteChilds() {
+	Tree* child = GetChild(this);
+	DeleteSubTree(child);
+	free(child);
+	this->SetChild(NULL);
+}
+
+Tree* Tree::GetChild(Tree* Addr) {
+	return Addr->Right;
+}
+
+Tree* Tree::GetBrother(Tree* Addr) {
+	return Addr->Left;
+}
+
+Tree* Tree::GetChild() {
+	return GetChild(this);
+}
+
+Tree* Tree::GetBrother() {
+	return GetBrother(this);
+}
+
+void Tree::SetChild(Tree* tree) {
+	this->Right = tree;
+	if (tree != NULL) tree->Up = this;
+}
+
+void Tree::SetBrother(Tree* tree) {
+	this->Left = tree;
+	if (tree != NULL) tree->Up = this;
+}
+
+void Tree::SetBrotherUp(Tree* tree) {
+	this->Up = tree;
+	tree->Left = this;
+}
+
+Tree* Tree::GetBrotherUp() {
+	return this->Up;
+}
+
+Tree* Tree::CopyFunc() {
+	if (this->n->typeObject != ObjFunction) return NULL;
+	Tree* func = new Tree(*this->GetNode());
+	func->SetChild(new Tree());
+
+	func->Left = this->Left;
+	func->Up = this;
+	this->Left->Up = func;
+	this->Left = func;
+	Cur = func->GetChild();
+	return func;
+}
+
+void Tree::RemoveCopyiedFunc() {
+	if (this->n->typeObject != ObjFunction) return;
+	this->Left->DeleteChilds();
+	Tree* func = this->Left;
+	this->Left = this->Left->Left;
+	free(func);
+	this->Left->Up = this;
+}
+
+Tree::Tree(Node Data) {
+	this->n = new Node(Data);
 }

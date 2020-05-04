@@ -2,6 +2,7 @@
 #include "Scaner.h"
 #include "Diagram.h"
 #include <iostream>
+void setValue(TData* data, TData* sdata, int exp);
 
 using namespace std;
 
@@ -50,8 +51,10 @@ bool Diagram::FOrW() {
 	if (_type == DOUBLE or _type == CHAR)
 	{
 		_type = scaner->Scaner(l); // Получить текущую лексему
-		if (_type == MAIN)
+		if (_type == MAIN) {
 			scaner->SetUK(uk1);
+			return true;
+		}
 		else if (_type == ID)
 		{
 			_type = scaner->Scaner(l);
@@ -72,22 +75,22 @@ void Diagram::W() {
 	int _type = scaner->Scaner(l);	// Получить текущую лексему
 	if (_type != DOUBLE && _type != CHAR)
 		scaner->PrintError("Ошибка! Ожидался double или char", NULL);
-	D();
+	D((DataType)_type);
 	_type = scaner->Scaner(l);
 	if (_type != SEMICOLON)
 		scaner->PrintError("Ошибка! Ожидался символ ';'", NULL);
 }
 
 // Список
-void Diagram::D() {
+void Diagram::D(DataType type) {
 	LEX l;
-	Z();
+	Z(type);
 	int uk1 = scaner->GetUK();	// Запомнить текущую лексему
 	int _type = scaner->Scaner(l);	// Получить текущую лексему
 
 	while (_type == COMMA)
 	{
-		Z();
+		Z(type);
 		uk1 = scaner->GetUK();
 		_type = scaner->Scaner(l);
 	}
@@ -95,10 +98,10 @@ void Diagram::D() {
 }
 
 // Переменная, массив
-void Diagram::Z() {
-	LEX l;
+void Diagram::Z(DataType type) {
+	LEX l, id; TData data;
 	int uk1 = scaner->GetUK();	// Запомнить текущую лексему
-	int _type = scaner->Scaner(l);	// Получить текущую лексему
+	int _type = scaner->Scaner(id);	// Получить текущую лексему
 
 	if (_type != ID)
 		scaner->PrintError("Ошибка! Ожидался идентификатор.", NULL);
@@ -109,66 +112,91 @@ void Diagram::Z() {
 	{
 		_type = scaner->Scaner(l);	// Получить текущую лексему
 		// Занесение идентификатора массива в таблицу с типом curType
-		Tree* v = tree->SemInclude(l, ObjTypeArray);
+		Tree* v = NULL;
+		if (flagInterpret) v = tree->SemInclude(id, ObjTypeArray);
+		_type = scaner->Scaner(l);
+		A(&data);
+		if (flagInterpret) {
+			v->GetNode()->Data.DataType = type;
+			v->GetNode()->Data.DataValue.DataAsArray = new TDataValue[(int)data.DataValue.DataAsDouble];
+			v->GetNode()->arrSize = (int)data.DataValue.DataAsDouble;
+		}
+		_type = scaner->Scaner(l);
+		if (_type != RSBRACKET)
+			scaner->PrintError("Ошибка! Ожидалась правая квадратная скобка.", NULL);
 	}
 	else
 	{
-		_type = scaner->Scaner(l);	// Получить текущую лексему
-		// Занесение идентификатора в таблицу с типом curType
-		Tree* v = tree->SemInclude(l, ObjTypeUnknown);
-	}
-
-	uk1 = scaner->GetUK();	// Запомнить текущую лексему
-	_type = scaner->Scaner(l);	// Получить текущую лексему
-	if (_type == SAVE)
-		A();
-	else if (_type == LSBRACKET)
-	{
-		uk1 = scaner->GetUK();
-		_type = scaner->Scaner(l);
-		if (_type != RSBRACKET)
-		{
-			scaner->SetUK(uk1);
-			A();
-			// Проверим закрывается ли скобка
-			uk1 = scaner->GetUK();
-			_type = scaner->Scaner(l);
-			if (_type != RSBRACKET)
-				scaner->PrintError("Ошибка! Ожидалась правая квадратная скобка.", NULL);
-			uk1 = scaner->GetUK();
-			_type = scaner->Scaner(l);
-			if (_type == SAVE)
-				A();
-			else scaner->SetUK(uk1);
+		Tree* var = NULL;
+		if (flagInterpret) {
+			var = tree->SemInclude(id, ObjTypeVar);
+			var->GetNode()->Data.DataType = type;
 		}
+		V(flagInterpret ? var : NULL, &data);
 	}
-	else scaner->SetUK(uk1);
+}
+
+void Diagram::Main() {
+	LEX l; int t; LEX main = "main";
+	if (flagInterpret) tree->SemInclude(main, ObjFunction);
+	t = scaner->Scaner(l);
+	if (t != LBRACKET) scaner->PrintError("Ожидался символ '('", l);
+	t = scaner->Scaner(l);
+	if (t != RBRACKET) scaner->PrintError("Ожидался символ ')'", l);
+	Q();
 }
 
 // Функция
 void Diagram::F() {
-	LEX l;
-	int _type = scaner->Scaner(l);	// Получить текущую лексему
+	LEX l; int _type; Tree* func = NULL;
+	int retType = _type = scaner->Scaner(l);	// Получить текущую лексему
 	if (_type != DOUBLE && _type != CHAR)
 		scaner->PrintError("Ошибка! Ожидался double или char.", NULL);
 	_type = scaner->Scaner(l);
-	if (_type != ID && _type != MAIN)
+
+	if (_type == MAIN)
+	{
+		Main();
+		return;
+	}
+	else if (_type != ID)
 		scaner->PrintError("Ошибка! Ожидался идентификатор или main.", NULL);
+
+	if (flagInterpret) {
+		func = tree->SemInclude(l, ObjFunction);
+		switch (retType)
+		{
+		case DOUBLE:
+			func->GetNode()->Data.DataType = _DOUBLE;
+			break;
+		case CHAR:
+			func->GetNode()->Data.DataType = _CHAR;
+			break;
+		default:
+			func->GetNode()->Data.DataType = _UNKNOWN;
+			break;
+		}
+	}
 
 	int uk1 = scaner->GetUK();
 	// Занесение имя функции в таблицу
-	Tree* func = tree->SemInclude(l, ObjFunction);
-	
+
 	_type = scaner->Scaner(l);
 	if (_type != LBRACKET)
 		scaner->PrintError("Ошибка! Ожидалась левая круглая скобка.", NULL);
 	_type = scaner->Scaner(l);
 	if (_type != RBRACKET)
 		scaner->PrintError("Ошибка! Ожидалась Пправая круглая скобка.", NULL);
+	if (flagInterpret) func->SetFuncStart(scaner->GetUK());
+	bool flag = flagInterpret;
 
+	flagInterpret = false;
 	Q();
-	tree->SetCur(func); // восстановили исходную позицию в дереве
+	flagInterpret = flag;
 
+	if (flagInterpret) {
+		tree->SetCur(func);
+	}
 }
 
 // Составной оператор
@@ -176,14 +204,15 @@ void Diagram::Q() {
 	LEX l;
 	int _type = scaner->Scaner(l);	// Получить текущую лексему
 	LEX a = "";
-	Tree* block = tree->SemInclude(a, ObjFunction);
+	Tree* block = NULL;
+	if (flagInterpret) block = tree->SemInclude(a, ObjFunction);
 	if (_type != LBRACE)
 		scaner->PrintError("Ошибка! Ожидалась левая фигурная скобка.", NULL);
 	O();
 	_type = scaner->Scaner(l);
 	if (_type != RBRACE)
 		scaner->PrintError("Ошибка! Ожидалась правая фигурная скобка.", NULL);
-	tree->SetCur(block); // восстановили исходную позицию в дереве
+	if (flagInterpret) tree->SetCur(block); // восстановили исходную позицию в дереве
 }
 
 // Операторы и описания
@@ -196,7 +225,8 @@ void Diagram::O() {
 	{
 		if (_type == DOUBLE || _type == CHAR)
 			W();
-		else K();
+		else
+			K();
 		uk1 = scaner->GetUK();	// Запомнить текущую позицию
 		_type = scaner->Scaner(l);	// Получить текущую лексему
 		scaner->SetUK(uk1);			// Вернуть старую позицию
@@ -205,221 +235,583 @@ void Diagram::O() {
 
 // Оператор и вызов функции
 void Diagram::K() {
-	LEX l;
+	LEX l; TData data;
 	int uk1 = scaner->GetUK();	// Запомнить текущую позицию
 	int _type = scaner->Scaner(l);	// Получить текущую лексему
 	if (_type == LBRACE)
 	{
 		scaner->SetUK(uk1);			// Вернуть старую позицию
 		Q();
+		return;
 	}
 	else if (_type == WHILE)
 	{
 		scaner->SetUK(uk1);			// Вернуть старую позицию
 		H();
+		return;
+	}
+	else if (_type == RETURN)
+	{
+		scaner->SetUK(uk1);			// Вернуть старую позицию
+		RET();
+		return;
 	}
 	else if (_type == SEMICOLON) return; // пустой оператор
 	else if (_type == ID)
 	{
-		// Поиск имени функции и переменной в таблице
-		Tree* v1 = tree->SemGetType(l);
-		Tree* v = tree->SemGetFunct(l);
-
-
 		_type = scaner->Scaner(l);	// Получить текущую лексему
 		if (_type == LBRACKET)
 		{
-			_type = scaner->Scaner(l);
-			if (_type != RBRACKET)
-				scaner->PrintError("Ошибка! Ожидалась правая круглая скобка.", NULL);
+			scaner->SetUK(uk1);
+			FC(&data);
+			return;
 		}
 		else if (_type == LSBRACKET)
 		{
-			A();
+			A(&data);
 			_type = scaner->Scaner(l);
-			if(_type != RSBRACKET)
+			if (_type != RSBRACKET)
 				scaner->PrintError("Ошибка! Ожидалась правая квадратная скобка.", NULL);
-			scaner->SetUK(uk1);			// Вернуть старую позицию
-			U();
-		}
-		else
-		{
-			scaner->SetUK(uk1);			// Вернуть старую позицию
-			U();
 		}
 	}
-	else
-	{
-		scaner->SetUK(uk1);			// Вернуть старую позицию
-		U();
-	}
+	scaner->SetUK(uk1);			// Вернуть старую позицию
+	U();
 
 }
 
 // while
 void Diagram::H() {
-	LEX l;
+	LEX l; TData condition; LEX a = "";
+	Tree* block = NULL;
+	condition.DataValue.DataAsChar = false;
+	if (flagInterpret) block = tree->SemInclude(a, ObjFunction);
 	int _type = scaner->Scaner(l);	// Получить текущую лексему
 	if (_type != WHILE)
 		scaner->PrintError("Ошибка! Ожидался while", NULL);
 	_type = scaner->Scaner(l);	// Получить текущую лексему
 	if (_type != LBRACKET)
 		scaner->PrintError("Ошибка! Ожидалась левая круглая скобка", NULL);
-	A();
+	int exp = scaner->GetUK();
+	A(&condition);
 	_type = scaner->Scaner(l);	// Получить текущую лексему
 	if (_type != RBRACKET)
 		scaner->PrintError("Ошибка! Ожидалась правая круглая скобка", NULL);
+	int body = scaner->GetUK();
+	bool flag = flagInterpret;
+cycle:
+	flagInterpret = condition.DataValue.DataAsChar != 0;
 	K();
+
+	if (flagInterpret) {
+		scaner->SetUK(exp);
+		A(&condition);
+		scaner->SetUK(body);
+		goto cycle;
+	}
+	else {
+		flagInterpret = flag;
+		if (!flagInterpret) return;
+		tree->SetCur(block);
+		block->DeleteChilds();
+	}
 }
 
-// Присваивание, бинарное присваивание и инкрементирование и декрементирование
+// Присваивание, бинарное присваивание
 void Diagram::U() {
-	LEX l;
+	LEX l; TData data;
 	int uk1;
 	int _type = scaner->Scaner(l);	// Получить текущую лексему
-	if (_type != ID and _type != PLUSPLUS and _type != MINUSMINUS)
-		scaner->PrintError("Ошибка! Ожидались (идентификатор, ++ или --).", NULL);
-	if (_type == ID)
-	{
-		// Поиск имени идентификатора в таблице
-		Tree* v1 = tree->SemGetType(l);
+	if (_type != ID)
+		scaner->PrintError("Ошибка! Ожидался индентефикатор.", l);
 
-		uk1 = scaner->GetUK();	// Запомнить текущую позицию
+	// Поиск имени идентификатора в таблице
+	Tree* var = NULL;
+	if (flagInterpret) var = tree->SemGetType(l);
+	//if(ObjType!= ObjTypeArray && ObjType!=ObjTypeVar)
+	int index;
+
+	uk1 = scaner->GetUK();	// Запомнить текущую позицию
+	_type = scaner->Scaner(l);	// Получить текущую лексему
+	if (_type == LSBRACKET)
+	{
+		TData value;
+		A(&data);
+		value.DataType = _DOUBLE;
+		setValue(&value, &data, SAVE);
+		index = value.DataValue.DataAsDouble;
 		_type = scaner->Scaner(l);	// Получить текущую лексему
-		if (_type == LSBRACKET)
-		{
-			A();
-			_type = scaner->Scaner(l);	// Получить текущую лексему
-			if (_type == RSBRACKET)
-				_type = scaner->Scaner(l);	// Получить текущую лексему
+		if (_type != RSBRACKET)
+			scaner->PrintError("Ошибка! Ожидалась правая квадратная скобка!", NULL);
+		if (flagInterpret) {
+			if (var->GetNode()->typeObject != ObjTypeArray)
+				scaner->PrintError("Ошибка! Левая часть выражения не является элементом массива!", NULL);
+			if (!(0 <= index && index <= var->GetNode()->arrSize))
+				scaner->PrintError("Ошибка! Индекс элемента массива вне диапазона!", NULL);
 		}
-		else
-		{
-			scaner->SetUK(uk1);			// Вернуть старую позицию
-			_type = scaner->Scaner(l);	// Получить текущую лексему
-		}
-
-		if (_type != SAVE and _type != PLUSEQ and _type != MINUSEQ and _type != MULTEQ
-			and _type != DIVEQ and _type != MODEQ and _type != PLUSPLUS and _type != MINUSMINUS)
-			scaner->PrintError("Ошибка! Ожидалось (=, +=, -=, *=. %=, /=, ++ или --).", NULL);
-
-		if (_type == SAVE or _type == PLUSEQ or _type == MINUSEQ or _type == MULTEQ
-			or _type == DIVEQ or _type == MODEQ)
-			A();
-		else if (_type == PLUSPLUS or _type == MINUSMINUS)
-			return;
 	}
-	else if (_type == PLUSPLUS or _type == MINUSMINUS)
+	else
 	{
-		_type = scaner->Scaner(l); // Получить текущую лексему
-		if (_type != ID) 
-			scaner->PrintError("Ошибка! Ожидался идентификатор.", NULL);
+		if (flagInterpret && var->GetNode()->typeObject != ObjTypeVar)
+			scaner->PrintError("Ошибка! Левая часть выражения не является переменной!", NULL);
+		scaner->SetUK(uk1);			// Вернуть старую позицию
+		//_type = scaner->Scaner(l);	// Получить текущую лексему
+	}
 
-		// Поиск имени идентификатора в таблице
-		Tree* v1 = tree->SemGetType(l);
+	_type = scaner->Scaner(l);	// Получить текущую лексему
+	if (_type != SAVE and _type != PLUSEQ and _type != MINUSEQ and _type != MULTEQ
+		and _type != DIVEQ and _type != MODEQ and _type != PLUSPLUS and _type != MINUSMINUS)
+		scaner->PrintError("Ошибка! Ожидалось (=, +=, -=, *=. %=, /=).", NULL);
+	else
+	{
+		A(&data);
+		if (flagInterpret) {
+			if (var->GetNode()->typeObject == ObjTypeArray) {
+				TData setVal;
+				setVal.DataType = var->GetNode()->Data.DataType;
+				setVal.DataValue = var->GetNode()->Data.DataValue.DataAsArray[index];
+				setValue(&setVal, &data, _type);
+				var->GetNode()->Data.DataValue.DataAsArray[index] = setVal.DataValue;
+				var->GetNode()->DisplayVar(index);
+			}
+			else
+			{
+				setValue(&var->GetNode()->Data, &data, _type);
+				var->GetNode()->DisplayVar();
+			}
+		}
 	}
 }
 
 // Выражение
-void Diagram::A() {
-	LEX l;
-	int uk1 = scaner->GetUK();	// Запомнить текущую позицию
-	int _type = scaner->Scaner(l);	// Получить текущую лексему
-	if (_type != PLUS and _type != MINUS)
-		scaner->SetUK(uk1);  //Вернуть старую позицию
+void Diagram::A(TData* data) {
+	LEX l; int t, uk1; TData sdata;
+	B(data);
+	uk1 = scaner->GetUK();
+	t = scaner->Scaner(l);
 
-	if (_type == PLUSPLUS or _type == MINUSMINUS)
+	while (LT <= t and t <= NEQ)
 	{
-		uk1 = scaner->GetUK(); // Запомнить текущую позицию
-		_type = scaner->Scaner(l); // Получить текущую лексему
-	}
-	B();
-	uk1 = scaner->GetUK(); // Запомнить текущую позицию
-	_type = scaner->Scaner(l); // Получить текущую лексему
+		B(&sdata);
 
-	if (_type == PLUSPLUS or _type == MINUSMINUS)
-		return;
-
-	while (_type >= LT and _type <= NEQ)
-	{
-		B();
+		if (flagInterpret) {
+			switch (data->DataType) {
+			case _DOUBLE:
+				data->DataType = _CHAR;
+				switch (sdata.DataType) {
+				case _DOUBLE:
+					switch (t)
+					{
+					case LT: data->DataValue.DataAsChar = data->DataValue.DataAsDouble < sdata.DataValue.DataAsDouble; break;
+					case LE: data->DataValue.DataAsChar = data->DataValue.DataAsDouble <= sdata.DataValue.DataAsDouble; break;
+					case GT: data->DataValue.DataAsChar = data->DataValue.DataAsDouble > sdata.DataValue.DataAsDouble; break;
+					case GE: data->DataValue.DataAsChar = data->DataValue.DataAsDouble >= sdata.DataValue.DataAsDouble; break;
+					case EQ: data->DataValue.DataAsChar = data->DataValue.DataAsDouble == sdata.DataValue.DataAsDouble; break;
+					case NEQ: data->DataValue.DataAsChar = data->DataValue.DataAsDouble != sdata.DataValue.DataAsDouble; break;
+					default: break;
+					}
+					break;
+				case _CHAR:
+					switch (t)
+					{
+					case LT: data->DataValue.DataAsChar = data->DataValue.DataAsDouble < sdata.DataValue.DataAsChar; break;
+					case LE: data->DataValue.DataAsChar = data->DataValue.DataAsDouble <= sdata.DataValue.DataAsChar; break;
+					case GT: data->DataValue.DataAsChar = data->DataValue.DataAsDouble > sdata.DataValue.DataAsChar; break;
+					case GE: data->DataValue.DataAsChar = data->DataValue.DataAsDouble >= sdata.DataValue.DataAsChar; break;
+					case EQ: data->DataValue.DataAsChar = data->DataValue.DataAsDouble == sdata.DataValue.DataAsChar; break;
+					case NEQ: data->DataValue.DataAsChar = data->DataValue.DataAsDouble != sdata.DataValue.DataAsChar; break;
+					default: break;
+					}
+				}
+				break;
+			case _CHAR:
+				switch (sdata.DataType) {
+				case _DOUBLE:
+					switch (t)
+					{
+					case LT: data->DataValue.DataAsChar = data->DataValue.DataAsChar < sdata.DataValue.DataAsDouble; break;
+					case LE: data->DataValue.DataAsChar = data->DataValue.DataAsChar <= sdata.DataValue.DataAsDouble; break;
+					case GT: data->DataValue.DataAsChar = data->DataValue.DataAsChar > sdata.DataValue.DataAsDouble; break;
+					case GE: data->DataValue.DataAsChar = data->DataValue.DataAsChar >= sdata.DataValue.DataAsDouble; break;
+					case EQ: data->DataValue.DataAsChar = data->DataValue.DataAsChar == sdata.DataValue.DataAsDouble; break;
+					case NEQ: data->DataValue.DataAsChar = data->DataValue.DataAsChar != sdata.DataValue.DataAsDouble; break;
+					default: break;
+					}
+					break;
+				case _CHAR:
+					switch (t)
+					{
+					case LT: data->DataValue.DataAsChar = data->DataValue.DataAsChar < sdata.DataValue.DataAsChar; break;
+					case LE: data->DataValue.DataAsChar = data->DataValue.DataAsChar <= sdata.DataValue.DataAsChar; break;
+					case GT: data->DataValue.DataAsChar = data->DataValue.DataAsChar > sdata.DataValue.DataAsChar; break;
+					case GE: data->DataValue.DataAsChar = data->DataValue.DataAsChar >= sdata.DataValue.DataAsChar; break;
+					case EQ: data->DataValue.DataAsChar = data->DataValue.DataAsChar == sdata.DataValue.DataAsChar; break;
+					case NEQ: data->DataValue.DataAsChar = data->DataValue.DataAsChar != sdata.DataValue.DataAsChar; break;
+					default: break;
+					}
+					break;
+				}
+				break;
+			}
+		}
 		uk1 = scaner->GetUK(); //Запомнить текущую позицию
-		_type = scaner->Scaner(l); //Получить текущую лексему
+		t = scaner->Scaner(l); //Получить текущую лексему
 	}
-		
+
 	scaner->SetUK(uk1);  // Вернуть старую позицию
 }
 
 // Слагаемое
-void Diagram::B() {
-	E();
-	LEX l;
-	int uk1 = scaner->GetUK();	// Запомнить текущую позицию
-	int _type = scaner->Scaner(l);	// Получить текущую лексему
-	while (_type == PLUS or _type == MINUS)
+void Diagram::B(TData* data) {
+	LEX l; int t, uk1; TData sdata;
+	E(data);
+	uk1 = scaner->GetUK();	// Запомнить текущую позицию
+	t = scaner->Scaner(l);	// Получить текущую лексему
+	while (t == PLUS or t == MINUS)
 	{
-		E();
+		E(&sdata);
+
+		if (flagInterpret) {
+			switch (data->DataType) {
+			case _DOUBLE:
+				switch (sdata.DataType) {
+				case _DOUBLE:
+					if (t == PLUS)
+						data->DataValue.DataAsDouble += sdata.DataValue.DataAsDouble;
+					else
+						data->DataValue.DataAsDouble -= sdata.DataValue.DataAsDouble;
+					break;
+				case _CHAR:
+					if (t == PLUS)
+						data->DataValue.DataAsDouble += sdata.DataValue.DataAsChar;
+					else
+						data->DataValue.DataAsDouble -= sdata.DataValue.DataAsChar;
+					break;
+				}
+				break;
+			case _CHAR:
+				switch (sdata.DataType) {
+				case _DOUBLE:
+					data->DataType = _DOUBLE;
+					if (t == PLUS)
+						data->DataValue.DataAsDouble = data->DataValue.DataAsChar + sdata.DataValue.DataAsDouble;
+					else
+						data->DataValue.DataAsDouble = data->DataValue.DataAsChar - sdata.DataValue.DataAsDouble;
+					break;
+				case _CHAR:
+					if (t == PLUS)
+						data->DataValue.DataAsChar += sdata.DataValue.DataAsChar;
+					else
+						data->DataValue.DataAsChar -= sdata.DataValue.DataAsChar;
+					break;
+				}
+				break;
+			}
+		}
 		uk1 = scaner->GetUK(); // Запомнить текущую позицию
-		_type = scaner->Scaner(l); // Получить текущую лексему
+		t = scaner->Scaner(l); // Получить текущую лексему
 	}
 	scaner->SetUK(uk1);  // Вернуть старую позицию
 }
 
 // Множитель
-void Diagram::E() {
-	X();
-	LEX l;
-	int uk1 = scaner->GetUK();	// Запомнить текущую позицию
-	int _type = scaner->Scaner(l);	// Получить текущую лексему
-	while (_type == DIV or _type == MOD or _type == MULT)
+void Diagram::E(TData* data) {
+	LEX l; int t, uk1;
+	P(data);
+	TData sdata;
+	uk1 = scaner->GetUK();	// Запомнить текущую позицию
+	t = scaner->Scaner(l);	// Получить текущую лексему
+	while (t == DIV or t == MULT)
 	{
-		X();
+		P(&sdata);
+		if (flagInterpret) {
+			switch (data->DataType) {
+			case _DOUBLE:
+				switch (sdata.DataType) {
+				case _DOUBLE:
+					if (t == MULT)
+						data->DataValue.DataAsDouble *= sdata.DataValue.DataAsDouble;
+					else
+						data->DataValue.DataAsDouble /= sdata.DataValue.DataAsDouble;
+					break;
+				case _CHAR:
+					if (t == MULT)
+						data->DataValue.DataAsDouble *= sdata.DataValue.DataAsChar;
+					else
+						data->DataValue.DataAsDouble /= sdata.DataValue.DataAsChar;
+					break;
+				}
+				break;
+			case _CHAR:
+				switch (sdata.DataType) {
+				case _DOUBLE:
+					data->DataType = _DOUBLE;
+					if (t == MULT)
+						data->DataValue.DataAsDouble = data->DataValue.DataAsChar * sdata.DataValue.DataAsDouble;
+					else
+						data->DataValue.DataAsDouble = data->DataValue.DataAsChar * sdata.DataValue.DataAsDouble;
+					break;
+				case _CHAR:
+					if (t == MULT)
+						data->DataValue.DataAsChar *= sdata.DataValue.DataAsChar;
+					else
+						data->DataValue.DataAsChar /= sdata.DataValue.DataAsChar;
+					break;
+				}
+				break;
+			}
+		}
 		uk1 = scaner->GetUK(); // Запомнить текущую позицию
-		_type = scaner->Scaner(l); // Получить текущую лексему
+		t = scaner->Scaner(l); // Получить текущую лексему
 	}
 	scaner->SetUK(uk1);  // Вернуть старую позицию
 }
 
-// Элементарное выражение
-void Diagram::X() {
-	LEX l;
-	int uk1;
-	int _type = scaner->Scaner(l); // Получить текущую лексему
+void Diagram::P(TData* data) {
+	LEX l; int t, uk1;
+	uk1 = scaner->GetUK(); t = scaner->Scaner(l);
+	if (t != PLUS && t != MINUS) scaner->SetUK(uk1);
+	X(data);
 
-	if (_type != ID and _type != LBRACKET and _type != CONSTCHAR and _type != CONSTSTRING and _type != CONSTINT)
-		scaner->PrintError("Ошибка! Ожидался идентификатор, левая скобка или констанста char, string, int.", NULL);
+	if (flagInterpret) {
+		switch (t)
+		{
+		case MINUS:
+			switch (data->DataType) {
+			case _CHAR: data->DataValue.DataAsChar *= -1; break;
+			case _DOUBLE: data->DataValue.DataAsDouble *= -1; break;
+			}
+		}
+	}
+}
+
+// Элементарное выражение
+void Diagram::X(TData* data) {
+	LEX l, l1;
+	int uk1 = scaner->GetUK(); // Запомнить текущую позицию
+	int _type = scaner->Scaner(l1); // Получить текущую лексему
 
 	if (_type == ID)
 	{
-		// Поиск имени идентификатора в таблице
-		Tree* v1 = tree->SemGetType(l);
-
-		uk1 = scaner->GetUK(); // Запомнить текущую позицию
 		_type = scaner->Scaner(l); // Получить текущую лексему
-		if (_type != LSBRACKET)
-			scaner->SetUK(uk1);  // Вернуть старую позицию
+		scaner->SetUK(uk1); // Вернуть старую позицию
+		if (_type == LBRACKET)
+			FC(data);
 		else
-		{
-			A();
-			_type = scaner->Scaner(l); // Получить текущую лексему
-			if (_type != RSBRACKET)
-				scaner->PrintError("Ошибка! Ожидалась правая квадратная скобка.", NULL);
-
-		}
+			V(flagInterpret ? tree->SemGetType(l1) : NULL, data);
 	}
 	else if (_type == LBRACKET)
 	{
-		A();
+		A(data);
 		_type = scaner->Scaner(l); // Получить текущую лексему
-		if (_type != RBRACKET) 
+		if (_type != RBRACKET)
 			scaner->PrintError("Ошибка! Ожидалась правая скобка.", NULL);
 	}
-	else if (_type == CONSTCHAR or _type == CONSTINT or _type == CONSTSTRING)
-		return;
+	else if (_type == CONSTINT)
+	{
+		if (!flagInterpret) return;
+		double val = atof(l1);
+		data->DataType = _DOUBLE;
+		data->DataValue.DataAsDouble = val;
+	}
+	else if (_type == CONSTCHAR)
+	{
+		if (!flagInterpret) return;
+		char val;
+		if (l1[0] == '\\') {
+			switch (l1[1]) {
+			case 'n': val = '\n'; break;
+			case 't': val = '\t'; break;
+			case '\\': val = '\\'; break;
+			case '\'': val = '\''; break;
+			default: val = l1[1];
+			}
+		}
+		else val = l1[0];
+		data->DataType = _CHAR;
+		data->DataValue.DataAsChar = val;
+	}
+	else if (_type != CONSTSTRING)
+		scaner->PrintError("Неверное элементарное выражение!", l1);
 }
 
+void Diagram::FC(TData* data)
+{
+	LEX l;
+	int _type = scaner->Scaner(l);
+	if (_type != ID)
+		scaner->PrintError("Ошибка! Ожидался индентификатор.", NULL);
+
+	Tree* func = NULL;
+	if (flagInterpret) func = tree->SemGetFunct(l);
+
+	_type = scaner->Scaner(l);
+	if (_type != LBRACKET)
+		scaner->PrintError("Ошибка! Ожидалась левая круглая скобка.", NULL);
+	_type = scaner->Scaner(l);
+	if (_type != RBRACKET)
+		scaner->PrintError("Ошибка! Ожидалась правая круглая скобка.", NULL);
+
+	if (flagInterpret) {
+		TData ret = CallFunc(func);
+		data->DataType = ret.DataType;
+		data->DataValue = ret.DataValue;
+	}
+}
+
+TData Diagram::CallFunc(Tree* func) {
+	int uk = scaner->GetUK();
+	scaner->SetUK(func->GetFuncStart());
+	Tree* cur = tree->Cur;
+	func->CopyFunc();
+	bool flag = flagInterpret;
+	RetValue.DataType = func->GetNode()->Data.DataType;
+	Q();
+	flagInterpret = flag;
+	tree->SetCur(cur);
+	func->RemoveCopyiedFunc();
+	scaner->SetUK(uk);
+	return RetValue;
+}
+
+void setValue(TData* data, TData* sdata, int exp) {
+	switch (data->DataType) {
+	case _DOUBLE:
+		switch (sdata->DataType) {
+		case _DOUBLE:
+			switch (exp)
+			{
+			case SAVE: data->DataValue.DataAsDouble = sdata->DataValue.DataAsDouble; break;
+			case PLUSEQ: data->DataValue.DataAsDouble += sdata->DataValue.DataAsDouble; break;
+			case MINUSEQ: data->DataValue.DataAsDouble -= sdata->DataValue.DataAsDouble; break;
+			case DIVEQ: data->DataValue.DataAsDouble /= sdata->DataValue.DataAsDouble; break;
+			case MULTEQ: data->DataValue.DataAsDouble *= sdata->DataValue.DataAsDouble; break;
+			default: break;
+			}
+
+			break;
+		case _CHAR:
+			switch (exp)
+			{
+			case SAVE: data->DataValue.DataAsDouble = sdata->DataValue.DataAsChar; break;
+			case PLUSEQ: data->DataValue.DataAsDouble += sdata->DataValue.DataAsChar; break;
+			case MINUSEQ: data->DataValue.DataAsDouble -= sdata->DataValue.DataAsChar; break;
+			case DIVEQ: data->DataValue.DataAsDouble /= sdata->DataValue.DataAsChar; break;
+			case MULTEQ: data->DataValue.DataAsDouble *= sdata->DataValue.DataAsChar; break;
+			default: break;
+			}
+
+			break;
+		}
+		break;
+	case _CHAR:
+		switch (sdata->DataType) {
+		case _DOUBLE:
+			switch (exp)
+			{
+			case SAVE: data->DataValue.DataAsChar = sdata->DataValue.DataAsDouble; break;
+			case PLUSEQ: data->DataValue.DataAsChar += sdata->DataValue.DataAsDouble; break;
+			case MINUSEQ: data->DataValue.DataAsChar -= sdata->DataValue.DataAsDouble; break;
+			case DIVEQ: data->DataValue.DataAsChar /= sdata->DataValue.DataAsDouble; break;
+			case MULTEQ: data->DataValue.DataAsChar *= sdata->DataValue.DataAsDouble; break;
+			default: break;
+			}
+
+			break;
+		case _CHAR:
+			switch (exp)
+			{
+			case SAVE: data->DataValue.DataAsChar = sdata->DataValue.DataAsChar; break;
+			case PLUSEQ: data->DataValue.DataAsChar += sdata->DataValue.DataAsChar; break;
+			case MINUSEQ: data->DataValue.DataAsChar -= sdata->DataValue.DataAsChar; break;
+			case DIVEQ: data->DataValue.DataAsChar /= sdata->DataValue.DataAsChar; break;
+			case MULTEQ: data->DataValue.DataAsChar *= sdata->DataValue.DataAsChar; break;
+			default: break;
+			}
+
+			break;
+		}
+		break;
+	}
+}
+
+void Diagram::V(Tree* var, TData* data) {
+	LEX l; int t, uk1;
+	t = scaner->Scaner(l);
+	if (t != ID) scaner->PrintError("Ожидался индентификатор!", l);
+	uk1 = scaner->GetUK(); int exp = t = scaner->Scaner(l);
+	if (t == SAVE || t == PLUSEQ || t == MINUSEQ || t == DIVEQ || t == MULTEQ) {
+		uk1 = scaner->GetUK(); t = scaner->Scaner(l);
+		if (t == PLUS || t == MINUS || t == ID || t == CONSTCHAR || t == CONSTINT || t == CONSTSTRING) {
+			scaner->SetUK(uk1);
+			A(data);
+
+			if (flagInterpret) {
+				setValue(&var->GetNode()->Data, data, exp);
+				var->GetNode()->DisplayVar();
+			}
+		}
+		else scaner->PrintError("После знака '=' ожидалось выражение!", l);
+	}
+	else if (t == LSBRACKET)
+	{
+		TData data1; TData value;
+		A(&data1);
+		value.DataType = _DOUBLE;
+		setValue(&value, &data1, SAVE);
+		int index = value.DataValue.DataAsDouble;
+
+		t = scaner->Scaner(l);
+		if (t != RSBRACKET) scaner->PrintError("Ожидалась квадратная скобка!", l);
+		if (var->GetNode()->typeObject != ObjTypeArray)
+			scaner->PrintError("Данная переменная не является массивом!", var->GetNode()->id);
+		if (!(0 <= index && index <= var->GetNode()->arrSize))
+			scaner->PrintError("Ошибка! Индекс элемента массива вне диапазона!", NULL);
+		exp = t = scaner->Scaner(l);
+		if (t == SAVE || t == PLUSEQ || t == MINUSEQ || t == DIVEQ || t == MULTEQ)
+		{
+			A(data);
+			if (flagInterpret)
+			{
+				TData setVal;
+				setVal.DataType = var->GetNode()->Data.DataType;
+				setValue(&setVal, data, exp);
+				var->GetNode()->Data.DataValue.DataAsArray[index] = setVal.DataValue;
+				var->GetNode()->DisplayVar(index);
+			}
+		}
+		else
+		{
+			scaner->SetUK(uk1);
+			if (flagInterpret)
+			{
+				data->DataType = var->GetNode()->Data.DataType;
+				data->DataValue = var->GetNode()->Data.DataValue.DataAsArray[index];
+			}
+		}
+	}
+	else {
+		scaner->SetUK(uk1);
+		if (flagInterpret)
+		{
+			data->DataType = var->GetNode()->Data.DataType;
+			data->DataValue = var->GetNode()->Data.DataValue;
+		}
+	}
+}
+
+void Diagram::RET() {
+	LEX l; int t;
+	t = scaner->Scaner(l);
+	if (t != RETURN) scaner->PrintError("Ожидалось ключевое слово return!", l);
+	TData Value;
+	A(&Value);
+	setValue(&RetValue, &Value, SAVE);
+	t = scaner->Scaner(l);
+	if (t != SEMICOLON) scaner->PrintError("Ожидался символ ';'!", l);
+	flagInterpret = false;
+}
 
 void Diagram::printTree()
 {
-	tree->Print();
+	tree->Print(0);
 }
