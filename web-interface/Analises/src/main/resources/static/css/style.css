@@ -1,0 +1,60 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+body {
+  /* Нижний край поля по высоте нижнего колонтитула (высота футера)*/
+  margin-bottom: 60px;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Устанавливаем фиксированную высоту футера */
+  height: 60px;
+  line-height: 60px; /* Вертикально центрируем текст футера */
+  background-color: #333333;
+  text-align: center;
+}
+
+h1 {
+    font-size: 36px;
+    background-color: #333333;
+    padding: 50px;
+    color: white;
+}
+
+.container-fluid {
+  width: 100%;
+}
+
+.container {
+  width: auto;
+}
+
+.card {
+	margin:50px 5px;
+  height: auto;
+}
+
+
+.form-control {
+	resize: none;
+}
+
+.form-group {
+  color: black;
+}
+
+.my-custom-scrollbar {
+  position: relative;
+  height: 410px;
+  overflow: auto;
+}
+.table-wrapper-scroll-y {
+  display: block;
+}
+
+textarea {
+  margin-bottom: 15px;
+}
