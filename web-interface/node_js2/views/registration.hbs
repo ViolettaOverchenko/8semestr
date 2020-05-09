@@ -1,39 +1,48 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Регистрация</title>
-    <meta charset="utf-8" />
-</head>
-<body>
-    <h1>Введите данные</h1>
-    <form name="registerForm">
-        <label>Имя</label></br>
-        <input type="text" name="userName" /></br></br>
-        <label>Возраст</label></br>
-        <input type="number" name="userAge" /></br></br>
-        <button type="submit" id="submit">Отправить</button>
-    </form>
-    <script>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="description" content="BasicAuth">
+    <meta name="author" content="siddub">
 
-        document.getElementById("submit").addEventListener("click", function (e) {
-             e.preventDefault();
-            // получаем данные формы
-            let registerForm = document.forms["registerForm"];
-            let userName = registerForm.elements["userName"].value;
-            let userAge = registerForm.elements["userAge"].value;
-            // сериализуем данные в json
-            let user = JSON.stringify({userName: userName, userAge: userAge});
-            let request = new XMLHttpRequest();
-            // посылаем запрос на адрес "/user"
-             request.open("POST", "/user", true);
-             request.setRequestHeader("Content-Type", "application/json");
-             request.addEventListener("load", function () {
-                // получаем и парсим ответ сервера
-                 let receivedUser = JSON.parse(request.response);
-                 console.log(receivedUser.userName, "-", receivedUser.userAge);   // смотрим ответ сервера
-             });
-             request.send(user);
-         });
-    </script>
+    <title>BasicAuth</title>
+  <title>Create a Jangle account</title>  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+</head>
+
+<body>
+<div class="container">
+      <form class="login-form" method="POST" action="/addUser"  >
+        <h2 class="form-heading">Create your Account</h2>
+        <input name="username" type="text" class="form-control" placeholder="Username" autofocus="true"/>
+        <input name="email" type="text" class="form-control" placeholder="Email" autofocus="true"/>
+        <input name="password" type="password" class="form-control" placeholder="Password" />
+        <input name="passwordConfirm" type="password" class="form-control" placeholder="Password confirm" />
+
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+      </form>
+
+</div>
+<!-- /container -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+
+
+<style>
+input{
+  margin-bottom: 15px
+}
+h2{
+  text-align: center
+}
+.container{
+  width:50%
+}
+</style>
+
 </body>
-<html>
+</html>

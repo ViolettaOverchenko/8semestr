@@ -8,6 +8,8 @@ var hbs = require('express-handlebars');
 
 
 var indexRouter = require('./routes/index');
+var registrationRouter = require('./routes/registration');
+var authorizationRouter = require('./routes/authorization');
 
 var app = express();
 
@@ -15,16 +17,16 @@ var app = express();
 app.engine('hbs', hbs({extname: 'hbs', defaultLayout:'layout', layuotsDir: __dirname + '/views/layouts/'}));
 app.set('view engine', 'hbs');
 app.set('views', path.join(__dirname, 'views'));
-//app.use('/public', express.static('public'))
 app.use(express.static(__dirname + '/public'));
 
 app.use(logger('dev'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
-//app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
+app.use('/', registrationRouter);
+app.use('/', authorizationRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -42,21 +44,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-module.exports = app;
+//module.exports = app;
 
 
-
-// создаем парсер для данных в формате json
-const jsonParser = express.json();
-app.post("/user", jsonParser, function (request, response) {
-    console.log(request.body);
-    if(!request.body) return response.sendStatus(400);
-
-    response.json(request.body); // отправляем пришедший ответ обратно
-});
-
-app.get("/", function(request, response){
-
-    response.sendFile(__dirname + "/routes/registration");
-});
 app.listen(3000);
