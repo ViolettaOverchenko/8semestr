@@ -15,10 +15,13 @@ router.post('/authorization', function(req, res){
         if(results.length >0){
             passwordHash = results[0].passwordUser;
             if(password == passwordHash){
-                res.json({
+              var id = results[0].idUser;
+              console.log(id);
+              res.redirect('/user');
+                /*res.json({
                     status:true,
                     message:'successfully authenticated'
-                })
+                })*/
             }else{
                 res.json({
                   status:false,

@@ -1,74 +1,19 @@
-
-<!--<link rel="stylesheet" type="text/css" href="/stylesheets/style_registration.css" />
-
-<div>
-
-  <form class="form-signin" method="POST">
-    <img class="mb-4" src="../images/img_avatar.png" alt="" width="72" height="72">
-    <h1 class="h3 mb-3 font-weight-normal">Регистрация</h1>
-
-    <label for="inputEmail" class="sr-only">Введите ваш email</label>
-    <input type="email" id="inputEmail" name="email" class="form-control" placeholder="Email" required autofocus>
-    <label for="inputPassword" class="sr-only">Введите пароль</label>
-    <input type="password" id="inputPassword" name="password class="form-control" placeholder="Пароль" required>
-    <label for="inputPasswordRepeat" class="sr-only">Повторите пароль</label>
-    <input type="passwordRepeat" id="inputPasswordRepeat" class="form-control" placeholder="Повторите пароль" required>
-    <a class="btn btn-lg btn-primary btn-block" href="http://diplom.local" role="button">Зарегистрироваться</a>
-    <input type="submit" value="Submit">
-    <div class="container signin">
-      <p>Уже есть аккаунт? <a href="/authorization">Войти</a>.</p>
-    </div>
-  </form>
+<link rel="stylesheet" type="text/css" href="/stylesheets/style_authorization.css" />
+<div class="text-center">
+  <div class="container">
+    <form class="form-signin" method="POST" action="/authorization" >
+          <img class="mb-4" src="../images/img_avatar.png" alt="" width="72" height="72">
+          <h1 class="h3 mb-3 font-weight-normal">Вход</h1>
+          <label for="inputEmail" class="sr-only">Email</label>
+          <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+          <label for="inputPassword" class="sr-only">Пароль</label>
+          <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
+          <div class="checkbox mb-3">
+            <label>
+              <input type="checkbox" value="remember-me"> Запомнить
+            </label>
+          </div>
+          <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
+    </form>
+  </div>
 </div>
--->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="BasicAuth">
-    <meta name="author" content="siddub">
-
-    <title>BasicAuth</title>
-
-	 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-  <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css" rel="stylesheet" crossorigin="anonymous">
-
-</head>
-
-<body>
-
-<div class="container">
-  <form method="POST" action="/authorization"  >
-      <h2>Log in </h2>
-
-      <input name="email" type="text" class="form-control" placeholder="Email Address"
-              autofocus="true"/>
-      <input name="password" type="password" class="form-control" placeholder="Password"/>
-
-      <button class="btn btn-lg btn-primary btn-block" type="submit">Log In</button>
-
-      <div style="align-text:center;margin-bottom:10px;margin-top:15px"> Don't have an account? <a href='/register'>Sign up</a></div>
-
-  </form>
-</div>
-
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<!--<script src="${contextPath}/resources/js/bootstrap.min.js"></script>-->
-</body>
-<style>
-input{
-  margin-bottom: 15px
-}
-h2{
-  text-align: center
-}
-.container{
-  width:50%
-}
-</style>
-</html>

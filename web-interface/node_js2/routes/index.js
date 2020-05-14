@@ -61,4 +61,28 @@ router.get('/authorization', function(req, res) {
     res.render('authorization');
 });
 
+
+// Переход на страницу анализа 2 текстов
+router.get('/analyses2document', function(req, res) {
+    res.render('analyses2document');
+});
+
+// Переход на страницу анализа 2 текстов
+router.get('/user', function(req, res) {
+    res.render('user');
+});
+/* Тест для ajax */
+router.get('/testajax', function(req, res) {
+  /*connection.query('SELECT * FROM keyword', function(err, rows) {
+    if (err) throw err;
+    res.render('index', { words: rows });
+  });*/
+  connection.query('SELECT * FROM keyword', function(err, rows) {
+    if (err) throw err;
+  var words = rows;
+  res.send(words);
+});
+});
+
+
 module.exports = router;

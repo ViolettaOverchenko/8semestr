@@ -1,48 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
- <meta name="description" content="BasicAuth">
-    <meta name="author" content="siddub">
+<link rel="stylesheet" type="text/css" href="/stylesheets/style_registration.css" />
 
-    <title>BasicAuth</title>
-  <title>Create a Jangle account</title>  <!-- Latest compiled and minified CSS -->
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<div class="text-center">
+  <form class="form-signin" method="POST" action="/addUser">
+        <img class="mb-4" src="../images/img_avatar.png" alt="" width="72" height="72">
+        <h1 class="h3 mb-3 font-weight-normal">Регистрация</h1>
 
-</head>
-
-<body>
-<div class="container">
-      <form class="login-form" method="POST" action="/addUser"  >
-        <h2 class="form-heading">Create your Account</h2>
-        <input name="username" type="text" class="form-control" placeholder="Username" autofocus="true"/>
-        <input name="email" type="text" class="form-control" placeholder="Email" autofocus="true"/>
-        <input name="password" type="password" class="form-control" placeholder="Password" />
-        <input name="passwordConfirm" type="password" class="form-control" placeholder="Password confirm" />
-
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
-      </form>
-
+        <label for="inputEmail" class="sr-only">Введите ваш email</label>
+        <input type="email" name="email" id="inputEmail" class="form-control" placeholder="Email" required autofocus>
+        <label for="inputPassword"  class="sr-only">Введите пароль</label>
+        <input type="password" name="password" id="inputPassword" class="form-control" placeholder="Пароль" required>
+        <label for="inputPasswordRepeat" class="sr-only">Повторите пароль</label>
+        <input type="password" name="passwordConfirm" id="inputPasswordRepeat" class="form-control" placeholder="Повторите пароль" required>
+        <span id="message"></span>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Зарегистрироваться</button>
+        <div class="container signin">
+          <p>Уже есть аккаунт? <a href="/authorization" >Войти</a>.</p>
+        </div>
+  </form>
 </div>
-<!-- /container -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-
-
-<style>
-input{
-  margin-bottom: 15px
-}
-h2{
-  text-align: center
-}
-.container{
-  width:50%
-}
-</style>
-
-</body>
-</html>
